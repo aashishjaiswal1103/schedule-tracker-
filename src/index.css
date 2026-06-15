@@ -1,0 +1,381 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   DESIGN SYSTEM — Accountability Dashboard
+   Swiss Neo-Minimalism (Notion × Linear × Framer)
+   ======================================== */
+
+:root {
+  /* Canvas */
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+  --surface-hover: #F5F5F7;
+
+  /* Text */
+  --text-primary: #111111;
+  --text-secondary: #737373;
+  --text-muted: #A3A3A3;
+
+  /* Borders */
+  --border: #E5E5E5;
+  --border-hover: #D4D4D4;
+  --divider: #F0F0F0;
+
+  /* Monochrome Colors */
+  --accent: #000000;
+  --accent-hover: #262626;
+  --accent-light: #E5E5E5;
+  
+  --green-dark: #171717;
+  --green-mid: #262626;
+  --green-bright: #404040;
+  --green-muted: #737373;
+  --green-light: #E5E5E5;
+  --green-tint: #F5F5F7;
+
+  --pink-dark: #262626;
+  --pink-mid: #404040;
+  --pink-light: #737373;
+  --pink-tint: #F5F5F7;
+
+  /* Semantic (Monochrome equivalents) */
+  --success: #171717;
+  --warning: #404040;
+  --danger: #525252;
+
+  --chip-bg: #F5F5F7;
+  --chip-text: #737373;
+
+  /* Typography */
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Spacing */
+  --page-max-w: 1080px;
+  --section-pad: 32px;
+  --card-pad-y: 24px;
+  --card-pad-x: 28px;
+  --gap-cards: 16px;
+  --gap-sections: 40px;
+
+  /* Radii */
+  --radius-card: 20px;
+  --radius-btn: 12px;
+  --radius-input: 12px;
+  --radius-chip: 8px;
+  --radius-checkbox: 6px;
+  --radius-modal: 24px;
+
+  /* Transitions */
+  --transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Shadows */
+  --shadow-soft: 0 1px 3px rgba(0, 0, 0, 0.01), 0 8px 24px rgba(0, 0, 0, 0.03);
+  --shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.01), 0 12px 32px rgba(0, 0, 0, 0.05);
+}
+
+/* Dark theme */
+.dark {
+  --bg: #0C0C0C;
+  --surface: #141414;
+  --surface-hover: #1E1E1E;
+  --text-primary: #F5F5F7;
+  --text-secondary: #A3A3A3;
+  --text-muted: #525252;
+  --border: #262626;
+  --border-hover: #404040;
+  --divider: #1E1E1E;
+  
+  --accent: #FFFFFF;
+  --accent-hover: #E5E5E5;
+  --accent-light: #262626;
+
+  --green-dark: #ECECEC;
+  --green-mid: #D4D4D4;
+  --green-bright: #A3A3A3;
+  --green-muted: #525252;
+  --green-light: #262626;
+  --green-tint: #1E1E1E;
+
+  --pink-dark: #ECECEC;
+  --pink-mid: #A3A3A3;
+  --pink-light: #525252;
+  --pink-tint: #1E1E1E;
+
+  --success: #E5E5E5;
+  --warning: #A3A3A3;
+  --danger: #525252;
+
+  --chip-bg: #1E1E1E;
+  --chip-text: #A3A3A3;
+  
+  --shadow-soft: 0 1px 2px rgba(0, 0, 0, 0.2), 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 4px 6px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Focus mode */
+.focus-mode {
+  --bg: #FAFAFA;
+  --surface: #FFFFFF;
+}
+
+/* ========================================
+   BASE STYLES
+   ======================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-primary);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--bg);
+  transition: background var(--transition);
+}
+
+/* Custom modern scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+  border: 2px solid var(--bg);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* ========================================
+   COMPONENT CLASSES
+   ======================================== */
+
+/* Cards */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  padding: var(--card-pad-y) var(--card-pad-x);
+  box-shadow: var(--shadow-soft);
+  transition: all var(--transition);
+}
+.card-interactive:hover {
+  border-color: var(--border-hover);
+  box-shadow: var(--shadow-hover);
+  transform: translateY(-2px);
+}
+
+/* Section headers */
+.section-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.section-heading {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+}
+
+/* Stat numbers */
+.stat-number {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+}
+.stat-number-lg {
+  font-size: 48px;
+}
+
+/* Card labels */
+.card-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* Timer display */
+.timer-display {
+  font-family: var(--font-mono);
+  font-size: 64px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.04em;
+}
+
+/* Chips / Tags */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--chip-bg);
+  color: var(--chip-text);
+  border-radius: var(--radius-chip);
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  transition: all var(--transition);
+}
+
+/* Badges */
+.badge-success {
+  background: var(--text-primary);
+  color: var(--surface);
+}
+.badge-alert {
+  background: var(--divider);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+/* Dividers */
+.divider {
+  border: none;
+  border-top: 1px solid var(--divider);
+}
+
+/* Modal overlay */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 50;
+  animation: fadeIn 200ms ease;
+}
+.modal-content {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-modal);
+  padding: 32px;
+  max-width: 520px;
+  width: 90%;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 24px 48px -12px rgba(0, 0, 0, 0.15);
+  animation: slideUp 250ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* Custom Checkbox */
+.custom-checkbox {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-checkbox);
+  border: 2px solid var(--border-hover);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+.custom-checkbox:hover {
+  border-color: var(--text-primary);
+}
+.custom-checkbox.checked {
+  background: var(--text-primary);
+  border-color: var(--text-primary);
+}
+
+/* Input fields */
+.input-field {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  width: 100%;
+  transition: all var(--transition);
+  outline: none;
+}
+.input-field:focus {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+.input-field::placeholder {
+  color: var(--text-muted);
+}
+
+/* Select */
+.select-field {
+  appearance: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-input);
+  padding: 12px 16px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--transition);
+  outline: none;
+}
+.select-field:focus {
+  border-color: var(--text-primary);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* Progress bar */
+.progress-track {
+  height: 8px;
+  background: var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Heatmap cells */
+.heatmap-cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  transition: transform var(--transition);
+}
+.heatmap-cell:hover {
+  transform: scale(1.3);
+  z-index: 10;
+}
