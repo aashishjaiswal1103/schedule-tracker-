@@ -65,7 +65,7 @@ export function useNotifications(profile, todayData) {
     // Morning briefing
     if (notifs.morningBriefing && profile.wakeTime) {
       const t = scheduleNotification(profile.wakeTime, '☀️ Good Morning',
-        'Check your accountability dashboard for today\'s plan', 'morning');
+        'Check your schedule tracker for today\'s plan', 'morning');
       if (t) timeoutsRef.current.push(t);
     }
 

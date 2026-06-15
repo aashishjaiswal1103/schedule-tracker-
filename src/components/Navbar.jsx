@@ -17,8 +17,20 @@ export default function Navbar({ activeTab, onTabChange }) {
       <aside className="hidden md:flex flex-col h-[calc(100vh-2rem)] sticky top-4 left-4 w-20 bg-[#0A0A0A] text-white rounded-[24px] py-8 px-3 justify-between items-center shrink-0 shadow-lg">
         {/* Top: Logo */}
         <div className="flex flex-col items-center gap-1">
-          <div className="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center font-extrabold text-lg tracking-tight select-none">
-            A.
+          <div className="w-10 h-10 rounded-xl bg-white text-black flex items-center justify-center select-none p-1.5">
+            <svg viewBox="0 0 100 100" className="w-full h-full text-black" fill="none" stroke="currentColor" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="50" cy="50" r="44" />
+              <rect x="30" y="32" width="40" height="38" rx="4" />
+              <path d="M40 26 v6" />
+              <path d="M60 26 v6" />
+              <path d="M30 42 h40" />
+              <rect x="37" y="49" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+              <rect x="47" y="49" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+              <rect x="57" y="49" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+              <rect x="37" y="59" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+              <rect x="47" y="59" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+              <rect x="57" y="59" width="6" height="6" rx="1" fill="currentColor" stroke="none" />
+            </svg>
           </div>
           <span className="text-[10px] font-bold tracking-wider text-neutral-400 mt-1 uppercase">V1.0</span>
         </div>

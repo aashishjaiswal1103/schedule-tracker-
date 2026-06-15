@@ -241,7 +241,7 @@ export default function App() {
         {/* Top Header Bar with Breadcrumb and Cloud Status */}
         <header className="flex items-center justify-between mb-8 pb-4 border-b border-divider">
           <div className="flex flex-col">
-            <span className="text-xs font-semibold text-text-muted tracking-wider uppercase mb-0.5">App</span>
+            <span className="text-xs font-semibold text-text-muted tracking-wider uppercase mb-0.5">Schedule Tracker</span>
             <h1 className="text-xl font-bold tracking-tight text-text-primary">{tabTitles[activeTab]}</h1>
           </div>
 
