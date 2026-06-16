@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { User, Sun, Moon, Clock, Target, Palette, Bell, Database, Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Download, AlertTriangle, Cloud, CloudOff, RefreshCw } from 'lucide-react';
+import React, { useState } from 'react';
+import { User, Sun, Moon, Clock, Target, Palette, Bell, Plus, Trash2, GripVertical, ChevronUp, ChevronDown, Download, AlertTriangle } from 'lucide-react';
 import { Card, CardLabel, SectionLabel, Button, Input, Select, Chip, Divider } from '../components/UI';
 import Modal from '../components/Modal';
 import { generateId } from '../lib/utils';
 import { exportAllData, downloadJSON, clearAllData, KEYS, saveData } from '../lib/storage';
 import { requestNotificationPermission } from '../lib/notifications';
 import { DEFAULT_CATEGORIES, createTodayData } from '../data/defaults';
-import { getSupabaseConfig, saveSupabaseConfig, clearSupabaseConfig, testConnection } from '../lib/supabase';
 
 export default function SettingsTab({ profile, setProfile, todayData, setTodayData }) {
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -14,43 +13,7 @@ export default function SettingsTab({ profile, setProfile, todayData, setTodayDa
   const [newCategory, setNewCategory] = useState({ label: '', color: '#171717' });
   const [newBlock, setNewBlock] = useState({ time: '09:00', label: '', category: 'deep-work', recurring: 'daily' });
 
-  // Supabase State
-  const [dbUrl, setDbUrl] = useState('');
-  const [dbKey, setDbKey] = useState('');
-  const [testStatus, setTestStatus] = useState('idle'); // idle | testing | success | error
-
   const allCategories = [...DEFAULT_CATEGORIES, ...(profile.customCategories || [])];
-
-  // Load Supabase credentials on mount
-  useEffect(() => {
-    const config = getSupabaseConfig();
-    setDbUrl(config.url || '');
-    setDbKey(config.key || '');
-  }, []);
-
-  const handleTestAndConnect = async () => {
-    if (!dbUrl.trim() || !dbKey.trim()) {
-      alert("Please fill in both the Supabase URL and Anon Key.");
-      return;
-    }
-    setTestStatus('testing');
-    const connected = await testConnection(dbUrl.trim(), dbKey.trim());
-    if (connected) {
-      saveSupabaseConfig(dbUrl.trim(), dbKey.trim());
-      setTestStatus('success');
-    } else {
-      setTestStatus('error');
-    }
-  };
-
-  const handleDisconnect = () => {
-    if (confirm("Disconnect database? Local data will remain intact, but online syncing will stop.")) {
-      clearSupabaseConfig();
-      setDbUrl('');
-      setDbKey('');
-      setTestStatus('idle');
-    }
-  };
 
   const updateProfile = (key, value) => {
     setProfile((prev) => {
@@ -113,93 +76,7 @@ export default function SettingsTab({ profile, setProfile, todayData, setTodayDa
   return (
     <div className="space-y-8">
       
-      {/* 1. Supabase Cloud Sync Settings */}
-      <div>
-        <SectionLabel>Database Connection (Supabase)</SectionLabel>
-        <Card className="p-6 space-y-4">
-          <div className="flex items-center gap-3">
-            <Database size={18} className="text-black dark:text-white" />
-            <div>
-              <h4 className="text-sm font-bold">Cloud Sync Settings</h4>
-              <p className="text-xs text-text-secondary mt-0.5">
-                Link to your own Supabase database to save scores, sleep logs, and sessions permanently.
-              </p>
-            </div>
-          </div>
 
-          <div className="space-y-3 pt-2">
-            <div>
-              <CardLabel>Supabase Project URL</CardLabel>
-              <Input
-                value={dbUrl}
-                onChange={(e) => setDbUrl(e.target.value)}
-                placeholder="https://your-project-id.supabase.co"
-                className="mt-1 text-xs"
-              />
-            </div>
-            <div>
-              <CardLabel>Supabase Anon Key</CardLabel>
-              <Input
-                type="password"
-                value={dbKey}
-                onChange={(e) => setDbKey(e.target.value)}
-                placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                className="mt-1 text-xs font-mono"
-              />
-            </div>
-          </div>
-
-          {/* Test Status feedback */}
-          {testStatus === 'testing' && (
-            <div className="text-xs font-semibold text-neutral-600 flex items-center gap-2">
-              <RefreshCw size={12} className="animate-spin" /> Verifying credentials...
-            </div>
-          )}
-          {testStatus === 'success' && (
-            <div className="text-xs font-bold text-black dark:text-white flex items-center gap-2">
-              <Cloud size={14} /> Database Connected & Syncing!
-            </div>
-          )}
-          {testStatus === 'error' && (
-            <div className="text-xs font-bold text-red-500 flex items-center gap-2">
-              <AlertTriangle size={14} /> Verification failed. Check credentials or tables.
-            </div>
-          )}
-
-          <div className="flex gap-3 pt-2">
-            <Button
-              onClick={handleTestAndConnect}
-              disabled={testStatus === 'testing'}
-              className="flex-1 py-3 text-xs bg-black text-white hover:bg-neutral-800 font-bold"
-            >
-              Test & Connect
-            </Button>
-            {(getSupabaseConfig().url) && (
-              <Button
-                onClick={handleDisconnect}
-                variant="destructive"
-                className="py-3 text-xs font-bold border-red-200 text-red-500 hover:bg-red-50"
-              >
-                Disconnect
-              </Button>
-            )}
-          </div>
-
-          <Divider />
-          <div className="bg-neutral-50 dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-xl p-4 space-y-2">
-            <CardLabel>SETUP INSTRUCTIONS</CardLabel>
-            <p className="text-[11px] text-text-secondary leading-relaxed">
-              1. Create a Supabase project at <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" className="underline font-bold text-black dark:text-white">supabase.com</a>.
-            </p>
-            <p className="text-[11px] text-text-secondary leading-relaxed">
-              2. Open the **SQL Editor** in your Supabase dashboard and run the schema queries located in the <code className="font-mono bg-neutral-200 dark:bg-neutral-800 px-1 py-0.5 rounded">supabase_schema.sql</code> file at the root of this project.
-            </p>
-            <p className="text-[11px] text-text-secondary leading-relaxed">
-              3. Retrieve the **Project URL** and **Anon API Key** from Settings → API, copy-paste them above, and click Connect!
-            </p>
-          </div>
-        </Card>
-      </div>
 
       {/* 2. User Profile */}
       <div>
