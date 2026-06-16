@@ -7,7 +7,7 @@ import { formatTime, formatDate, getScoreColor, getScoreLabel, isTimePast, gener
 import { calculateDailyScore } from '../lib/score';
 import { KEYS, loadData } from '../lib/storage';
 
-export default function Dashboard({ todayData, setTodayData, profile }) {
+export default function Dashboard({ todayData, setTodayData, profile, setActiveTab, timer }) {
   const now = useClock();
   const [showBriefing, setShowBriefing] = useState(() => now.getHours() < 9);
   const [noteModal, setNoteModal] = useState(null); // block index
@@ -199,7 +199,12 @@ export default function Dashboard({ todayData, setTodayData, profile }) {
                 <p className="text-xs text-text-secondary mt-0.5">Category: {activeBlock.category}</p>
               </div>
             </div>
-            <Button variant="primary" size="sm" className="w-full sm:w-auto self-stretch sm:self-center">
+            <Button 
+              variant="primary" 
+              size="sm" 
+              className="w-full sm:w-auto self-stretch sm:self-center"
+              onClick={() => setActiveTab && setActiveTab('timer')}
+            >
               Continue Focus <ArrowRight size={14} />
             </Button>
           </div>
@@ -392,7 +397,22 @@ export default function Dashboard({ todayData, setTodayData, profile }) {
               <p className="text-xs text-text-secondary leading-relaxed">
                 Log completed work sessions or Pomodoro blocks to raise your score.
               </p>
-              <Button variant="primary" size="sm" className="py-2 px-4 text-xs font-bold w-full bg-black text-white hover:bg-neutral-800">
+              <Button 
+                variant="primary" 
+                size="sm" 
+                className="py-2 px-4 text-xs font-bold w-full bg-black text-white hover:bg-neutral-800"
+                onClick={() => {
+                  if (timer) {
+                    if (!timer.pomodoroMode) {
+                      timer.togglePomodoro();
+                    }
+                    timer.play();
+                  }
+                  if (setActiveTab) {
+                    setActiveTab('timer');
+                  }
+                }}
+              >
                 Start Pomodoro
               </Button>
             </div>

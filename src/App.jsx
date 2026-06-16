@@ -309,7 +309,7 @@ export default function App() {
         {/* Content Render Grid */}
         <main className="flex-1">
           {activeTab === 'dashboard' && (
-            <Dashboard todayData={todayData} setTodayData={setTodayData} profile={profile} />
+            <Dashboard todayData={todayData} setTodayData={setTodayData} profile={profile} setActiveTab={setActiveTab} timer={timer} />
           )}
           {activeTab === 'timer' && (
             <TimerTab
