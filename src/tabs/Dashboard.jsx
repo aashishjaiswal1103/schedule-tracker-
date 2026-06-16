@@ -26,20 +26,18 @@ export default function Dashboard({ todayData, setTodayData, profile, setActiveT
   // Load history for charts
   const rawHistory = loadData(KEYS.HISTORY) || [];
   const history = useMemo(() => {
-    // Return last 7 days. If empty, return placeholder values for a beautiful first load graph
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    if (rawHistory.length === 0) {
-      return days.map((day, idx) => ({
-        label: day,
-        value: [65, 80, 55, 90, 75, 95, score || 70][idx],
-      }));
-    }
-    // Take last 7 records and reverse to chronological
+    // Take last 7 records (6 history + today) and reverse to chronological
     const recent = rawHistory.slice(0, 6).reverse();
     recent.push({ date: 'Today', score: score });
     return recent.map((h, i) => {
+      if (h.date === 'Today') {
+        return {
+          label: 'Today',
+          value: score,
+        };
+      }
       const d = new Date(h.date + 'T12:00:00');
-      const label = h.date === 'Today' ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short' });
+      const label = d.toLocaleDateString('en-US', { weekday: 'short' });
       return {
         label,
         value: h.score || h.value || 0,
@@ -366,8 +364,11 @@ export default function Dashboard({ todayData, setTodayData, profile, setActiveT
               </div>
             </div>
           ) : (
-            <div className="h-24 flex items-center justify-center text-xs text-text-muted">
-              Not enough data to map statistics
+            <div className="h-28 flex flex-col items-center justify-center text-center p-4">
+              <span className="text-xs font-semibold text-text-secondary">No historical data available</span>
+              <span className="text-[11px] text-text-muted mt-1 max-w-[200px] leading-relaxed">
+                Log today's tasks and check back tomorrow to see your weekly trend graph.
+              </span>
             </div>
           )}
         </Card>
