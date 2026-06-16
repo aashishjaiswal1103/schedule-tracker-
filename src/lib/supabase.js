@@ -8,8 +8,27 @@ const KEYS = {
 
 export function getSupabaseConfig() {
   try {
-    const url = localStorage.getItem(KEYS.SB_URL) || import.meta.env.VITE_SUPABASE_URL || '';
-    const key = localStorage.getItem(KEYS.SB_KEY) || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+    const envUrl = import.meta.env.VITE_SUPABASE_URL || '';
+    const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
+
+    // Detect if .env credentials changed since last load
+    const lastEnvUrl = localStorage.getItem('accountability_last_env_url') || '';
+    const lastEnvKey = localStorage.getItem('accountability_last_env_key') || '';
+
+    if (envUrl !== lastEnvUrl || envKey !== lastEnvKey) {
+      if (envUrl && envKey) {
+        localStorage.setItem(KEYS.SB_URL, envUrl);
+        localStorage.setItem(KEYS.SB_KEY, envKey);
+      } else {
+        localStorage.removeItem(KEYS.SB_URL);
+        localStorage.removeItem(KEYS.SB_KEY);
+      }
+      localStorage.setItem('accountability_last_env_url', envUrl);
+      localStorage.setItem('accountability_last_env_key', envKey);
+    }
+
+    const url = localStorage.getItem(KEYS.SB_URL) || '';
+    const key = localStorage.getItem(KEYS.SB_KEY) || '';
     return { url: url.trim(), key: key.trim() };
   } catch {
     return { url: '', key: '' };

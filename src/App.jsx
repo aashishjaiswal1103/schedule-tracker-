@@ -18,10 +18,7 @@ import { Cloud, CloudLightning, CloudOff, RefreshCw } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
-  const [profile, setProfile] = useLocalStorage(KEYS.PROFILE, {
-    ...DEFAULT_PROFILE,
-    schedule: DEFAULT_SCHEDULE,
-  });
+  const [profile, setProfile] = useLocalStorage(KEYS.PROFILE, DEFAULT_PROFILE);
   const [todayData, setTodayData] = useState({
     date: new Date().toISOString().split('T')[0],
     schedule: [],
@@ -56,16 +53,30 @@ export default function App() {
     });
   }, []);
 
-  // Ensure new settings fields exist in loaded profile
+  // Ensure new settings fields exist in loaded profile & clear old defaults
   useEffect(() => {
     let changed = false;
     const updated = { ...profile };
-    if (!updated.reminders || updated.reminders.length === 0) {
-      updated.reminders = DEFAULT_REMINDERS;
+
+    // Clear old default schedule/reminders if they are present in local storage
+    const hasOldScheduleDefaults = updated.schedule?.some(item => ['s1', 's2', 's3', 's4'].includes(item.id));
+    const hasOldReminderDefaults = updated.reminders?.some(item => ['r1', 'r2', 'r3', 'r4'].includes(item.id));
+
+    if (hasOldScheduleDefaults) {
+      updated.schedule = [];
       changed = true;
     }
-    if (!updated.schedule || updated.schedule.length === 0) {
-      updated.schedule = DEFAULT_SCHEDULE;
+    if (hasOldReminderDefaults) {
+      updated.reminders = [];
+      changed = true;
+    }
+
+    if (updated.reminders === undefined || updated.reminders === null) {
+      updated.reminders = [];
+      changed = true;
+    }
+    if (updated.schedule === undefined || updated.schedule === null) {
+      updated.schedule = [];
       changed = true;
     }
     if (updated.pomodoroWorkMinutes === undefined) {
@@ -83,6 +94,17 @@ export default function App() {
     if (changed) {
       setProfile(updated);
       saveData(KEYS.PROFILE, updated);
+
+      // Also clear today's agenda if it contains the old default schedule or reminders
+      setTodayData(prev => {
+        const todayUpdated = {
+          ...prev,
+          schedule: hasOldScheduleDefaults ? [] : prev.schedule,
+          reminders: hasOldReminderDefaults ? [] : prev.reminders,
+        };
+        saveData(KEYS.TODAY, todayUpdated);
+        return todayUpdated;
+      });
     }
   }, []);
 

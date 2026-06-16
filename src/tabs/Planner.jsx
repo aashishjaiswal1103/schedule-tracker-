@@ -70,7 +70,14 @@ export default function Planner({ todayData, setTodayData, profile, setProfile }
 
   const [tomorrowSchedule, setTomorrowSchedule] = useState(() => {
     const saved = loadData('accountability_tomorrow');
-    if (saved && saved.date === getDateKey(tomorrow)) return saved.schedule;
+    if (saved && saved.date === getDateKey(tomorrow)) {
+      const hasOldDefaults = saved.schedule?.some(item => ['s1', 's2', 's3', 's4'].includes(item.id));
+      if (hasOldDefaults) {
+        saveData('accountability_tomorrow', { date: getDateKey(tomorrow), schedule: [] });
+        return [];
+      }
+      return saved.schedule;
+    }
     return (profile?.schedule && profile.schedule.length > 0 ? profile.schedule : DEFAULT_SCHEDULE).map((b) => ({ ...b, id: b.id || generateId() }));
   });
 
