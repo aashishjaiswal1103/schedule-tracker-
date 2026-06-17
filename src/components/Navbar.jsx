@@ -1,5 +1,5 @@
 import React from 'react';
-import { Home, GraduationCap, Moon, BarChart2, Calendar, Settings, LogOut } from 'lucide-react';
+import { Home, GraduationCap, Moon, BarChart2, Calendar, ClipboardList, Settings, LogOut } from 'lucide-react';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: Home },
@@ -7,6 +7,7 @@ const TABS = [
   { id: 'sleep', label: 'Sleep', icon: Moon },
   { id: 'analytics', label: 'Analytics', icon: BarChart2 },
   { id: 'planner', label: 'Planner', icon: Calendar },
+  { id: 'plans', label: 'Plans', icon: ClipboardList },
   { id: 'settings', label: 'Settings', icon: Settings },
 ];
 

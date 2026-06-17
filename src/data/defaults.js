@@ -25,6 +25,7 @@ export const DEFAULT_PROFILE = {
   reminders: [], // will be initialized dynamically
   pomodoroWorkMinutes: 25,
   pomodoroBreakMinutes: 5,
+  plans: [],
   updatedAt: new Date().toISOString(),
 };
 

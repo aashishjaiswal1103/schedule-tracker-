@@ -5,15 +5,104 @@ import Modal from '../components/Modal';
 import { useClock } from '../hooks/useClock';
 import { formatTime, formatDate, getScoreColor, getScoreLabel, isTimePast, generateId } from '../lib/utils';
 import { calculateDailyScore } from '../lib/score';
-import { KEYS, loadData } from '../lib/storage';
+import { KEYS, loadData, saveData } from '../lib/storage';
 
-export default function Dashboard({ todayData, setTodayData, profile, setActiveTab, timer }) {
+export default function Dashboard({ todayData, setTodayData, profile, setProfile, setActiveTab, timer }) {
   const now = useClock();
   const [showBriefing, setShowBriefing] = useState(() => now.getHours() < 9);
   const [noteModal, setNoteModal] = useState(null); // block index
   const [noteText, setNoteText] = useState('');
   const [showReminderForm, setShowReminderForm] = useState(false);
   const [newReminder, setNewReminder] = useState({ label: '', time: '09:00', repeat: 'daily' });
+
+  // Fetch active plans tasks for today
+  const todayPlanTasks = useMemo(() => {
+    const activePlans = profile?.plans ? profile.plans.filter((p) => p.isActive) : [];
+    const tasksList = [];
+
+    activePlans.forEach((plan) => {
+      if (!plan.startDate) return;
+
+      try {
+        const start = new Date(plan.startDate + 'T00:00:00');
+        const today = new Date(todayData.date + 'T00:00:00');
+        const diffTime = today - start;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays < 0) return; // Plan hasn't started yet
+
+        if (plan.type === 'daywise') {
+          const dayIndex = diffDays + 1;
+          if (dayIndex <= plan.duration) {
+            const periodTasks = plan.tasks && plan.tasks[dayIndex] ? plan.tasks[dayIndex] : [];
+            periodTasks.forEach((task, idx) => {
+              tasksList.push({
+                planId: plan.id,
+                planTitle: plan.title,
+                planType: plan.type,
+                period: dayIndex,
+                taskIndex: idx,
+                ...task
+              });
+            });
+          }
+        } else if (plan.type === 'weekwise') {
+          const weekIndex = Math.floor(diffDays / 7) + 1;
+          if (weekIndex <= plan.duration) {
+            const periodTasks = plan.tasks && plan.tasks[weekIndex] ? plan.tasks[weekIndex] : [];
+            periodTasks.forEach((task, idx) => {
+              tasksList.push({
+                planId: plan.id,
+                planTitle: plan.title,
+                planType: plan.type,
+                period: weekIndex,
+                taskIndex: idx,
+                ...task
+              });
+            });
+          }
+        }
+      } catch (e) {
+        console.warn('Error fetching plan tasks for dashboard:', e);
+      }
+    });
+
+    return tasksList;
+  }, [profile?.plans, todayData.date]);
+
+  const handlePlanTaskCheck = (planId, period, taskIndex, checked) => {
+    if (!setProfile) return;
+
+    const updatedPlans = (profile.plans || []).map((p) => {
+      if (p.id !== planId) return p;
+      const periodTasks = p.tasks[period] ? [...p.tasks[period]] : [];
+      if (periodTasks[taskIndex]) {
+        periodTasks[taskIndex] = {
+          ...periodTasks[taskIndex],
+          completed: checked,
+          completedDate: checked ? todayData.date : null
+        };
+      }
+      return {
+        ...p,
+        tasks: {
+          ...p.tasks,
+          [period]: periodTasks
+        }
+      };
+    });
+
+    const updatedProfile = {
+      ...profile,
+      plans: updatedPlans,
+      updatedAt: new Date().toISOString()
+    };
+    setProfile(updatedProfile);
+    saveData(KEYS.PROFILE, updatedProfile);
+
+    // Trigger todayData update to force score recalculation
+    setTodayData((prev) => ({ ...prev }));
+  };
 
   const scoreResult = useMemo(() => calculateDailyScore(todayData, profile), [todayData, profile]);
   const score = scoreResult.score;
@@ -205,6 +294,55 @@ export default function Dashboard({ todayData, setTodayData, profile, setActiveT
             >
               Continue Focus <ArrowRight size={14} />
             </Button>
+          </div>
+        )}
+
+        {/* Today's Plan Targets Section */}
+        {todayPlanTasks.length > 0 && (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <SectionLabel>Today's Plan Targets</SectionLabel>
+              <Chip variant="success">
+                {todayPlanTasks.filter(t => t.completed).length} / {todayPlanTasks.length} Done
+              </Chip>
+            </div>
+            <div className="space-y-3 mb-6">
+              {todayPlanTasks.map((task) => (
+                <Card key={task.id} interactive className="!py-4 hover:border-black">
+                  <div className="flex items-center justify-between gap-4 w-full">
+                    <div className="flex items-center gap-4 flex-1 min-w-0">
+                      <Checkbox
+                        checked={task.completed}
+                        onChange={(checked) => handlePlanTaskCheck(task.planId, task.period, task.taskIndex, checked)}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <span className={`text-[13px] font-bold truncate block ${task.completed ? 'line-through text-text-muted font-medium' : 'text-text-primary'}`}>
+                          {task.label}
+                        </span>
+                        <span className="text-[10px] text-text-muted block mt-0.5 uppercase tracking-wider font-semibold">
+                          From: {task.planTitle} ({task.planType === 'daywise' ? `Day ${task.period}` : `Week ${task.period}`})
+                        </span>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-3 shrink-0">
+                      {task.completed ? (
+                        <span className="w-6 h-6 rounded-full bg-neutral-100 flex items-center justify-center text-[10px] text-neutral-800 font-bold select-none">✓</span>
+                      ) : (
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          className="py-1 px-3 text-[11px] font-bold hover:bg-black hover:text-white"
+                          onClick={() => handlePlanTaskCheck(task.planId, task.period, task.taskIndex, true)}
+                        >
+                          Complete
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
 

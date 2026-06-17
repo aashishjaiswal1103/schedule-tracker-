@@ -6,6 +6,7 @@ import SleepHealth from './tabs/SleepHealth';
 import Analytics from './tabs/Analytics';
 import Planner from './tabs/Planner';
 import SettingsTab from './tabs/Settings';
+import PlansTab from './tabs/Plans';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { useTimer } from './hooks/useTimer';
 import { useDailyReset } from './hooks/useDailyReset';
@@ -250,6 +251,7 @@ export default function App() {
     sleep: 'Sleep & Health',
     analytics: 'Analytics & Heatmap',
     planner: 'Schedule Planner',
+    plans: 'Followed Plans',
     settings: 'Settings',
   };
 
@@ -309,7 +311,7 @@ export default function App() {
         {/* Content Render Grid */}
         <main className="flex-1">
           {activeTab === 'dashboard' && (
-            <Dashboard todayData={todayData} setTodayData={setTodayData} profile={profile} setActiveTab={setActiveTab} timer={timer} />
+            <Dashboard todayData={todayData} setTodayData={setTodayData} profile={profile} setProfile={setProfile} setActiveTab={setActiveTab} timer={timer} />
           )}
           {activeTab === 'timer' && (
             <TimerTab
@@ -329,6 +331,9 @@ export default function App() {
           )}
           {activeTab === 'planner' && (
             <Planner todayData={todayData} setTodayData={setTodayData} profile={profile} setProfile={setProfile} />
+          )}
+          {activeTab === 'plans' && (
+            <PlansTab profile={profile} setProfile={setProfile} todayData={todayData} setTodayData={setTodayData} />
           )}
           {activeTab === 'settings' && (
             <SettingsTab profile={profile} setProfile={setProfile} todayData={todayData} setTodayData={setTodayData} />
